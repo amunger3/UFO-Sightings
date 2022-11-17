@@ -1,5 +1,15 @@
  /* style.css */
 
- p {
+body {
+    color: #f7f7f7;
+}
+
+.jumbotron {
+    background-image: url("../img/nasa.jpg");
+    background-size: 100% 100%;
+    text-align: center;
+}
+
+/* p {
     color: #212221;
- }
+} */
