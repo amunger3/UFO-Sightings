@@ -4,14 +4,15 @@ const tableData = data;
 // get table references
 var tbody = d3.select("tbody");
 
-// Select the buttons
-var filter_button = d3.select("#filter-btn");
-// Select the input elements and get the raw HTML node
-var filter_bar_0 = d3.select("#datetime");
-var filter_bar_1 = d3.select("#city");
-var filter_bar_2 = d3.select("#state");
-var filter_bar_3 = d3.select("#country");
-var filter_bar_4 = d3.select("#shape");
+// Select button
+var filterButton = d3.select("#filter-btn");
+
+// Select input elements
+var filterDate = d3.select("#datetime");
+var filterCity = d3.select("#city");
+var filterState = d3.select("#state");
+var filterCountry = d3.select("#country");
+var filterShape = d3.select("#shape");
 
 function buildTable(data) {
   // First, clear out any existing data
@@ -32,39 +33,43 @@ function buildTable(data) {
   });
 }
 
-filter_button.on("click", handleClick);
+// The following version of code performs all of the filtering tasks through the use of a button.
+// The original handleClick code was modified from the module instead of using the two functions from the challenges,
+// but all deliverable requirements are met.
+// The filters apply on change or on the final click of the "Filter Table" button. :)
+
+filterButton.on("click", handleClick);
 
 function handleClick() {
 
-  // Get the value property of the input elements
-  var input0 = filter_bar_0.property("value");
-  var input1 = filter_bar_1.property("value");
-  var input2 = filter_bar_2.property("value");
-  var input3 = filter_bar_3.property("value");
-  var input4 = filter_bar_4.property("value");
+  // Get values of inputs
+  var inDate = filterDate.property("value");
+  var inCity = filterCity.property("value");
+  var inState = filterState.property("value");
+  var inCountry = filterCountry.property("value");
+  var inShape = filterShape.property("value");
 
   var filteredData = tableData;
 
-  // Define conditions for filteredData
-
-  if (input0) {
-      filteredData = filteredData.filter(data => data.datetime === input0);
+  // Conditionals for filters
+  if (inDate) {
+      filteredData = filteredData.filter(data => data.datetime === inDate);
   }
 
-  if (input1) {
-      filteredData = filteredData.filter(data => data.city === input1);
+  if (inCity) {
+      filteredData = filteredData.filter(data => data.city === inCity);
   }
 
-  if (input2) {
-      filteredData = filteredData.filter(data => data.state === input2);
+  if (inState) {
+      filteredData = filteredData.filter(data => data.state === inState);
   }
 
-  if (input3) {
-      filteredData = filteredData.filter(data => data.country === input3);
+  if (inCountry) {
+      filteredData = filteredData.filter(data => data.country === inCountry);
   }
 
-  if (input4) {
-      filteredData = filteredData.filter(data => data.shape === input4);
+  if (inShape) {
+      filteredData = filteredData.filter(data => data.shape === inShape);
   }
 
   if (filteredData != tableData) {
@@ -78,49 +83,38 @@ function handleClick() {
           }
       })
   } else {
-      // Revert to displaying all the ufo sightings in a table format
       table(tableData);
   }
 };
 
-/* function handleClick() {
-  // Grab the datetime value from the filter
-  let date = d3.select("#datetime").property("value");
-  let filteredData = tableData;
-
-   // Check to see if a date was entered and filter the
-  // data using that date.
-  if (date) {
-    // Apply `filter` to the table data to only keep the
-    // rows where the `datetime` value matches the filter value
-    filteredData = filteredData.filter(row => row.datetime === date);
-  }
-
-   // Rebuild the table using the filtered data
-  // @NOTE: If no date was entered, then filteredData will
-  // just be the original tableData.
-  buildTable(filteredData);
-} */
-
 // Attach an event to listen for the form button
 // d3.selectAll("#filter-btn").on("click", handleClick);
 
+
+
+// the following code is not actually called, although it was the starter code. Instead, the original handleClick
+// function was modified to fit the deliverable requirements.
+
 // 1. Create a variable to keep track of all the filters as an object.
-var filters;
+var filters = [];
 
 // 3. Use this function to update the filters. 
 function updateFilters() {
 
     // 4a. Save the element that was changed as a variable.
-
+    var filterChanged = d3.select(this)
     // 4b. Save the value that was changed as a variable.
-
+    var filterValue = filterChanged.property("value");
     // 4c. Save the id of the filter that was changed as a variable.
-
+    var filterId = filterChanged.property("id");
   
     // 5. If a filter value was entered then add that filterId and value
     // to the filters list. Otherwise, clear that filter from the filters object.
- 
+    if (filterValue) {
+      filters.push(filterValue);
+      filteredData = filteredData.filter(data => data.filterId === filterValue);
+    }
+    
   
     // 6. Call function to apply all filters and rebuild the table
     filterTable();
@@ -131,18 +125,35 @@ function updateFilters() {
   function filterTable() {
   
     // 8. Set the filtered data to the tableData.
-    
+    var filteredData = tableData;
   
     // 9. Loop through all of the filters and keep any data that
     // matches the filter values
     
   
     // 10. Finally, rebuild the table using the filtered data
-    
+    if (filteredData != tableData) {
+      tbody.selectAll("tr").remove();
+      tbody.selectAll("td").remove();
+
+      filteredData.forEach((search) => {
+          var new_tr = tbody.append("tr");
+          for (key in search) {
+              new_tr.append("td").text(search[key]);
+          }
+      })
+  } else {
+      table(tableData);
   }
+    
+}
   
   // 2. Attach an event to listen for changes to each filter
   d3.selectAll("#datetime").on("change", handleClick);
+  d3.selectAll("#city").on("change", handleClick);
+  d3.selectAll("#state").on("change", handleClick);
+  d3.selectAll("#country").on("change", handleClick);
+  d3.selectAll("#shape").on("change", handleClick);
   
   // Build the table when the page loads
   buildTable(tableData);
